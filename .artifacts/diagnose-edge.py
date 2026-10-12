@@ -1,0 +1,10 @@
+from pathlib import Path
+p=Path('supabase/functions/studysync-session/index.ts');s=p.read_text();s=s.replace("  try {\n    if (Number(req", "  let stage='request';\n  try {\n    if (Number(req")
+s=s.replace("    const limit=await admin.rpc", "    stage='database connection';\n    const limit=await admin.rpc")
+s=s.replace("    const page=await fetch", "    stage='VTOP connection';\n    const page=await fetch")
+s=s.replace("    const attendance=await university", "    stage='subject fetch';\n    const attendance=await university")
+s=s.replace("    let {data:profile", "    stage='profile sync';\n    let {data:profile")
+s=s.replace("    const synced=await admin.rpc", "    stage='academic storage';\n    const synced=await admin.rpc")
+s=s.replace("    const user=await admin.auth", "    stage='app session';\n    const user=await admin.auth")
+s=s.replace("} catch { return reply(502,{error:'University sync could not finish. Retry or sign in again.'}); }", "} catch (error) { console.error('StudySync sync failed',stage,error instanceof Error ? error.name : 'Unknown'); return reply(502,{error:`Could not complete ${stage}. Retry or sign in again.`}); }")
+p.write_text(s)

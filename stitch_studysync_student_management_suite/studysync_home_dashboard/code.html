@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+
+<html lang="en"><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" name="viewport"/><meta content="mobile_tab" name="shell-type"/><title>StudySync</title><link href="https://fonts.googleapis.com" rel="preconnect"/><link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/><link href="https://fonts.googleapis.com/css2?family=Nunito+Sans:wght@700;800&amp;family=Plus+Jakarta+Sans:wght@500;700&amp;display=swap" rel="stylesheet"/><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/><style>@layer base { html, body { width: 100vw; margin: 0; padding: 0; } body { overscroll-behavior: none; } .pb-safe { padding-bottom: env(safe-area-inset-bottom, 0px); } .pt-safe { padding-top: env(safe-area-inset-top, 0px); } main > :first-child { margin-top: 0 !important; } main > :last-child { margin-bottom: 0 !important; } } ::-webkit-scrollbar { display: none; }</style><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">tailwind.config = { darkMode: "class", theme: { extend: { colors: { "secondary-container": "#2fb8ff", "on-error-container": "#93000a", "on-background": "#1b1c1c", "on-secondary-fixed-variant": "#004c6e", "inverse-surface": "#303030", "primary-fixed-dim": "#6be026", "surface-container-lowest": "#ffffff", "surface-variant": "#e4e2e2", "surface": "#fbf9f8", "on-secondary-fixed": "#001e2e", "on-primary-container": "#1e5000", "outline": "#6f7b64", "on-secondary-container": "#004666", "outline-variant": "#becbb1", "faded-gray": "#afafaf", "inverse-primary": "#6be026", "primary-container": "#58cc02", "tertiary-container": "#aab0e8", "on-surface-variant": "#3f4a36", "on-tertiary-container": "#3b4272", "on-primary": "#ffffff", "on-tertiary-fixed": "#0f1646", "on-error": "#ffffff", "background": "#fbf9f8", "on-primary-fixed": "#082100", "on-tertiary-fixed-variant": "#3c4374", "on-primary-fixed-variant": "#1f5100", "surface-container-high": "#eae8e7", "inverse-on-surface": "#f2f0f0", "primary": "#2b6c00", "surface-bright": "#fbf9f8", "surface-container-low": "#f5f3f3", "error": "#ba1a1a", "tertiary-fixed-dim": "#bdc3fc", "on-tertiary": "#ffffff", "error-container": "#ffdad6", "surface-tint": "#2b6c00", "pencil-gray": "#777777", "tertiary-fixed": "#dfe0ff", "tertiary": "#545b8d", "on-secondary": "#ffffff", "storybook-green": "#d7ffb8", "secondary-fixed-dim": "#88ceff", "surface-container": "#efeded", "surface-container-highest": "#e4e2e2", "surface-dim": "#dbd9d9", "paper-white": "#ffffff", "on-surface": "#1b1c1c", "secondary-fixed": "#c8e6ff", "secondary": "#006590", "fresh-leaf": "#a5ed6e", "primary-fixed": "#87fe45" }, borderRadius: { "DEFAULT": "1rem", "lg": "2rem", "xl": "3rem", "full": "9999px" }, spacing: { "margin": "1rem", "space-lg": "1rem", "space-md": "0.75rem", "space-xs": "0.25rem", "space-xl": "1.5rem", "space-sm": "0.5rem", "gutter": "1rem", "margin-lg": "1.5rem", "gutter-sm": "0.75rem" }, fontFamily: { "headline-md": ["Nunito Sans"], "body-md": ["Plus Jakarta Sans"], "body-sm": ["Plus Jakarta Sans"], "label-caps": ["Plus Jakarta Sans"], "label-sm": ["Plus Jakarta Sans"], "label-md": ["Plus Jakarta Sans"], "headline-sm": ["Nunito Sans"], "headline-lg": ["Nunito Sans"], "display": ["Nunito Sans"], "headline-lg-mobile": ["Nunito Sans"], "body-lg": ["Plus Jakarta Sans"] }, fontSize: { "headline-md": ["22px", { "lineHeight": "28px", "fontWeight": "700" }], "body-md": ["15px", { "lineHeight": "22px", "fontWeight": "500" }], "body-sm": ["13px", { "lineHeight": "18px", "fontWeight": "500" }], "label-caps": ["14px", { "lineHeight": "18px", "letterSpacing": "0.06em", "fontWeight": "700" }], "label-sm": ["12px", { "lineHeight": "16px", "fontWeight": "700" }], "label-md": ["14px", { "lineHeight": "18px", "fontWeight": "700" }], "headline-sm": ["19px", { "lineHeight": "26px", "fontWeight": "700" }], "headline-lg": ["32px", { "lineHeight": "40px", "letterSpacing": "-0.015em", "fontWeight": "800" }], "display": ["40px", { "lineHeight": "48px", "letterSpacing": "-0.02em", "fontWeight": "800" }], "headline-lg-mobile": ["28px", { "lineHeight": "34px", "letterSpacing": "-0.01em", "fontWeight": "800" }], "body-lg": ["17px", { "lineHeight": "24px", "fontWeight": "500" }] } } } };</script><style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head><body class="bg-paper-white font-body-md text-on-surface antialiased"><header class="fixed top-0 w-full z-50 pt-safe bg-paper-white/90 backdrop-blur-xl shadow-[0_1px_8px_rgba(0,0,0,0.04)]"><div class="h-16 px-gutter flex items-center justify-between gap-space-sm"><div class="flex items-center gap-space-sm"><button aria-label="Open drawer" class="w-11 h-11 flex items-center justify-center rounded-DEFAULT text-on-surface hover:bg-surface-container transition-colors" onclick="document.getElementById('nav-drawer').classList.remove('-translate-x-full');document.getElementById('drawer-backdrop').classList.remove('opacity-0','pointer-events-none');" type="button"><span class="material-symbols-outlined text-[24px]">menu</span></button><div class="flex items-center gap-space-xs"><img alt="StudySync Logo" class="h-8 w-auto object-contain" src="https://lh3.googleusercontent.com/aida/AEtjO1WLbhHp84R58iFzZVB-e6SgytaFn_lTeXk8T573fjIXGVgedQGU3UoOL7RN6pep3jFVqNsNbgcL4FtqZ5IsekjIoBVMk00lOb_F0gCapc5FtA659nc_JWiKgh2YsRQzraWojFyPvtWvjQ6_yN_GMWAIY_OAUizEOfbmZoRnqxP9uoJkM45DGAQvLJloXOx-mTRVMIaXRX8ZAP7SyidQZZh_3mhmA6VaHSUiBjaxAY3RA6AdaQCwVEva4M6v"/><span class="font-headline-sm text-headline-sm text-on-surface tracking-tight ml-space-xs">StudySync</span></div></div><div class="flex items-center gap-space-sm"><span class="font-label-caps text-label-caps text-pencil-gray hidden sm:inline-block">Home</span><button aria-label="User Profile" class="w-11 h-11 flex items-center justify-center rounded-full hover:opacity-90 transition-opacity" type="button"><img alt="Profile" class="w-8 h-8 rounded-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDu99ysb_kmkvXLn4_JbVGHg18W-3H4PxQwYLRoa8yFANlRk7_yjoaj6N3E5eO86DsUFJhJERefVpl7PaVqb_e7DZnoWM9tz2RDJj6dvCDWCiaCZMNyxR6QHI1ij5S3KDeaaYWKPtke5kG6DsdsJh1fQncphYmc_KsxAfYcsqFNjjzuIwJZpQHNNWG1Eq7-gLOVshyMg5A0Kb-4Wv8LzvjaTROD0CxChmVFt0jTRdyRG61wEu-Sruds-A"/></button></div></div></header><div class="fixed inset-0 bg-on-background/40 backdrop-blur-sm z-50 opacity-0 pointer-events-none transition-opacity duration-300" id="drawer-backdrop" onclick="document.getElementById('nav-drawer').classList.add('-translate-x-full');this.classList.add('opacity-0','pointer-events-none');"></div><aside class="fixed top-0 bottom-0 left-0 w-72 max-w-[80vw] bg-paper-white z-50 flex flex-col pt-safe pb-safe shadow-[0_4px_24px_rgba(0,0,0,0.08)] -translate-x-full transition-transform duration-300 ease-out" id="nav-drawer"><div class="h-16 px-gutter flex items-center justify-between"><div class="flex items-center gap-space-xs"><img alt="StudySync Logo" class="h-8 w-auto object-contain" src="https://lh3.googleusercontent.com/aida/AEtjO1WLbhHp84R58iFzZVB-e6SgytaFn_lTeXk8T573fjIXGVgedQGU3UoOL7RN6pep3jFVqNsNbgcL4FtqZ5IsekjIoBVMk00lOb_F0gCapc5FtA659nc_JWiKgh2YsRQzraWojFyPvtWvjQ6_yN_GMWAIY_OAUizEOfbmZoRnqxP9uoJkM45DGAQvLJloXOx-mTRVMIaXRX8ZAP7SyidQZZh_3mhmA6VaHSUiBjaxAY3RA6AdaQCwVEva4M6v"/><span class="font-headline-sm text-headline-sm text-on-surface">StudySync</span></div><button aria-label="Close drawer" class="w-11 h-11 flex items-center justify-center rounded-DEFAULT text-pencil-gray hover:bg-surface-container hover:text-on-surface transition-colors" onclick="document.getElementById('nav-drawer').classList.add('-translate-x-full');document.getElementById('drawer-backdrop').classList.add('opacity-0','pointer-events-none');" type="button"><span class="material-symbols-outlined text-[24px]">close</span></button></div><nav class="flex-1 overflow-y-auto px-space-md py-space-sm flex flex-col gap-space-xs" data-active-classes="bg-storybook-green text-on-primary-container font-label-md"><a aria-current="page" class="flex items-center gap-space-md px-space-md h-12 rounded-DEFAULT transition-all bg-storybook-green text-on-primary-container font-label-md" data-path="home" href="#"><span class="material-symbols-outlined text-[22px]">home</span><span class="font-label-md text-label-md">Home</span></a><a class="flex items-center gap-space-md px-space-md h-12 rounded-DEFAULT text-pencil-gray hover:text-on-surface hover:bg-surface-container transition-all" data-path="tasks" href="#"><span class="material-symbols-outlined text-[22px]">check_circle</span><span class="font-label-md text-label-md">Tasks</span></a><a class="flex items-center gap-space-md px-space-md h-12 rounded-DEFAULT text-pencil-gray hover:text-on-surface hover:bg-surface-container transition-all" data-path="schedule" href="#"><span class="material-symbols-outlined text-[22px]">calendar_today</span><span class="font-label-md text-label-md">Schedule</span></a><a class="flex items-center gap-space-md px-space-md h-12 rounded-DEFAULT text-pencil-gray hover:text-on-surface hover:bg-surface-container transition-all" data-path="chat" href="#"><span class="material-symbols-outlined text-[22px]">forum</span><span class="font-label-md text-label-md">Chat</span></a><a class="flex items-center gap-space-md px-space-md h-12 rounded-DEFAULT text-pencil-gray hover:text-on-surface hover:bg-surface-container transition-all" data-path="quiz" href="#"><span class="material-symbols-outlined text-[22px]">quiz</span><span class="font-label-md text-label-md">Quiz</span></a><a class="flex items-center gap-space-md px-space-md h-12 rounded-DEFAULT text-pencil-gray hover:text-on-surface hover:bg-surface-container transition-all" data-path="jarvis" href="#"><span class="material-symbols-outlined text-[22px]">psychology</span><span class="font-label-md text-label-md">Jarvis</span></a><a class="flex items-center gap-space-md px-space-md h-12 rounded-DEFAULT text-pencil-gray hover:text-on-surface hover:bg-surface-container transition-all" data-path="notes" href="#"><span class="material-symbols-outlined text-[22px]">description</span><span class="font-label-md text-label-md">Notes</span></a><a class="flex items-center gap-space-md px-space-md h-12 rounded-DEFAULT text-pencil-gray hover:text-on-surface hover:bg-surface-container transition-all" data-path="settings" href="#"><span class="material-symbols-outlined text-[22px]">settings</span><span class="font-label-md text-label-md">Settings</span></a></nav><div class="p-space-md flex items-center gap-space-sm bg-surface-container-low rounded-DEFAULT mx-space-md mb-space-sm"><img alt="Profile" class="w-8 h-8 rounded-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDu99ysb_kmkvXLn4_JbVGHg18W-3H4PxQwYLRoa8yFANlRk7_yjoaj6N3E5eO86DsUFJhJERefVpl7PaVqb_e7DZnoWM9tz2RDJj6dvCDWCiaCZMNyxR6QHI1ij5S3KDeaaYWKPtke5kG6DsdsJh1fQncphYmc_KsxAfYcsqFNjjzuIwJZpQHNNWG1Eq7-gLOVshyMg5A0Kb-4Wv8LzvjaTROD0CxChmVFt0jTRdyRG61wEu-Sruds-A"/><div class="flex flex-col min-w-0 flex-1"><span class="font-label-md text-label-md text-on-surface truncate">Student Sync</span><span class="font-body-sm text-body-sm text-pencil-gray truncate">Focus Plan</span></div><span class="material-symbols-outlined text-primary-container text-[20px]">verified</span></div></aside><main class="flex flex-col relative w-full pt-16 pb-safe bg-paper-white min-h-screen"><div class="flex flex-col w-full px-margin pb-margin-lg space-y-space-xl">
+<!-- Top Greeting & Motivation Bar -->
+<section class="flex flex-col gap-space-xs pt-space-md">
+<div class="flex items-center justify-between">
+<span class="font-label-caps text-label-caps text-pencil-gray uppercase tracking-wider">Welcome back,</span>
+<div class="inline-flex items-center gap-space-xs px-space-sm py-1 rounded-full bg-storybook-green text-on-primary-container">
+<span class="material-symbols-outlined text-[16px]">local_fire_department</span>
+<span class="font-label-sm text-label-sm">5 Day Streak</span>
+</div>
+</div>
+<h1 class="font-headline-lg-mobile text-headline-lg-mobile text-on-surface tracking-tight">Alex Chen</h1>
+<p class="font-body-sm text-body-sm text-pencil-gray flex items-center gap-space-xs">
+<span class="material-symbols-outlined text-[16px] text-outline">school</span>
+<span>B.Sc Computer Science • Term 4</span>
+</p>
+</section>
+<!-- Study Statistics Section -->
+<section class="flex flex-col gap-space-sm">
+<div class="flex items-center justify-between">
+<h2 class="font-headline-sm text-headline-sm text-on-surface">Task Overview</h2>
+<a class="font-label-md text-label-md text-secondary hover:underline flex items-center gap-space-xs" href="#">
+<span>Detail</span>
+<span class="material-symbols-outlined text-[16px]">arrow_forward</span>
+</a>
+</div>
+<div class="grid grid-cols-3 gap-gutter-sm">
+<!-- Active Tasks Card -->
+<button class="flex flex-col items-center justify-center p-space-md bg-paper-white rounded-DEFAULT shadow-[0_4px_0_#afafaf] active:translate-y-1 active:shadow-[0_1px_0_#afafaf] transition-all text-left" type="button">
+<span class="font-display text-display text-primary-container leading-none">07</span>
+<span class="font-label-caps text-label-sm text-on-surface mt-space-xs text-center font-bold">Active</span>
+<span class="inline-flex items-center mt-space-xs px-space-xs py-0.5 rounded-full bg-storybook-green text-on-primary-container font-label-sm text-[10px]">
+          In Flight
+        </span>
+</button>
+<!-- Completed Card -->
+<button class="flex flex-col items-center justify-center p-space-md bg-paper-white rounded-DEFAULT shadow-[0_4px_0_#afafaf] active:translate-y-1 active:shadow-[0_1px_0_#afafaf] transition-all text-left" type="button">
+<span class="font-display text-display text-on-surface leading-none">18</span>
+<span class="font-label-caps text-label-sm text-pencil-gray mt-space-xs text-center font-bold">Done</span>
+<span class="inline-flex items-center mt-space-xs px-space-xs py-0.5 rounded-full bg-surface-container text-on-surface-variant font-label-sm text-[10px]">
+          72% Rate
+        </span>
+</button>
+<!-- Total Tasks Card -->
+<button class="flex flex-col items-center justify-center p-space-md bg-paper-white rounded-DEFAULT shadow-[0_4px_0_#afafaf] active:translate-y-1 active:shadow-[0_1px_0_#afafaf] transition-all text-left" type="button">
+<span class="font-display text-display text-pencil-gray leading-none">25</span>
+<span class="font-label-caps text-label-sm text-pencil-gray mt-space-xs text-center font-bold">Total</span>
+<span class="inline-flex items-center mt-space-xs px-space-xs py-0.5 rounded-full bg-surface-container text-pencil-gray font-label-sm text-[10px]">
+          Target 30
+        </span>
+</button>
+</div>
+</section>
+<!-- Jarvis Quick-Access Tactile Banner -->
+<section class="relative overflow-hidden rounded-DEFAULT bg-[#f4fbf0] p-space-lg shadow-[0_4px_0_#c4e8ad] flex flex-col gap-space-md">
+<div class="flex items-start justify-between">
+<div class="flex items-center gap-space-sm">
+<div class="w-10 h-10 rounded-full bg-storybook-green flex items-center justify-center text-primary">
+<svg class="w-6 h-6 stroke-current fill-none" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewbox="0 0 24 24">
+<path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"></path>
+<path d="M5 3v4"></path>
+<path d="M19 17v4"></path>
+<path d="M3 5h4"></path>
+<path d="M17 19h4"></path>
+</svg>
+</div>
+<div class="flex flex-col">
+<span class="font-label-caps text-label-caps text-on-primary-container">Co-Pilot Mode</span>
+<h3 class="font-headline-sm text-headline-sm text-on-surface">Ask Jarvis AI</h3>
+</div>
+</div>
+<span class="material-symbols-outlined text-primary-container text-[24px]">psychology</span>
+</div>
+<p class="font-body-md text-body-md text-on-surface-variant">
+      Jarvis is ready to assist with coursework, schedule optimization, and revision doubts.
+    </p>
+<div class="pt-space-xs">
+<button class="w-full h-12 bg-primary-container text-on-primary font-label-caps text-label-caps rounded-DEFAULT shadow-[0_4px_0_#46a302] active:translate-y-1 active:shadow-[0_1px_0_#46a302] flex items-center justify-center gap-space-sm transition-all" type="button">
+<span>Ask Jarvis</span>
+<span class="material-symbols-outlined text-[20px]">arrow_forward</span>
+</button>
+</div>
+</section>
+<!-- Upcoming Schedule Preview Section -->
+<section class="flex flex-col gap-space-md">
+<div class="flex items-center justify-between">
+<div>
+<h2 class="font-headline-sm text-headline-sm text-on-surface">Upcoming Schedule</h2>
+<span class="font-body-sm text-body-sm text-pencil-gray">Today's Agenda</span>
+</div>
+<a class="font-label-md text-label-md text-secondary hover:underline flex items-center gap-space-xs" href="#">
+<span>View Schedule</span>
+<span class="material-symbols-outlined text-[16px]">chevron_right</span>
+</a>
+</div>
+<div class="flex flex-col gap-space-sm">
+<!-- Event 1: Lecture -->
+<div class="flex items-start gap-space-md p-space-md bg-paper-white rounded-DEFAULT shadow-[0_3px_0_#e5e5e5] transition-all">
+<div class="flex flex-col items-center justify-center px-space-sm py-space-xs bg-surface-container rounded-DEFAULT min-w-[68px]">
+<span class="font-label-caps text-label-caps text-on-surface font-extrabold">10:00</span>
+<span class="font-label-sm text-[10px] text-pencil-gray uppercase font-bold">AM</span>
+</div>
+<div class="flex flex-col flex-1 min-w-0">
+<div class="flex items-center gap-space-xs">
+<span class="px-1.5 py-0.5 rounded-full bg-secondary-fixed text-on-secondary-fixed font-label-sm text-[10px]">Lecture</span>
+<span class="font-body-sm text-body-sm text-pencil-gray">• 90 min</span>
+</div>
+<h4 class="font-label-md text-label-md text-on-surface truncate mt-0.5">Discrete Mathematics</h4>
+<span class="font-body-sm text-body-sm text-pencil-gray flex items-center gap-space-xs mt-0.5">
+<span class="material-symbols-outlined text-[14px]">meeting_room</span>
+<span>Room LH-204</span>
+</span>
+</div>
+<button aria-label="Event options" class="w-8 h-8 rounded-full bg-surface-container-low flex items-center justify-center text-pencil-gray hover:text-on-surface self-center" type="button">
+<span class="material-symbols-outlined text-[18px]">more_vert</span>
+</button>
+</div>
+<!-- Event 2: Assignment Due -->
+<div class="flex items-start gap-space-md p-space-md bg-paper-white rounded-DEFAULT shadow-[0_3px_0_#e5e5e5] transition-all">
+<div class="flex flex-col items-center justify-center px-space-sm py-space-xs bg-[#ffdad6] rounded-DEFAULT min-w-[68px]">
+<span class="font-label-caps text-label-caps text-[#ba1a1a] font-extrabold">02:00</span>
+<span class="font-label-sm text-[10px] text-[#93000a] uppercase font-bold">PM</span>
+</div>
+<div class="flex flex-col flex-1 min-w-0">
+<div class="flex items-center gap-space-xs">
+<span class="px-1.5 py-0.5 rounded-full bg-[#ffdad6] text-[#93000a] font-label-sm text-[10px]">Due Today</span>
+<span class="font-body-sm text-body-sm text-pencil-gray">• Major Task</span>
+</div>
+<h4 class="font-label-md text-label-md text-on-surface truncate mt-0.5">Requirements Engineering SRS Draft</h4>
+<span class="font-body-sm text-body-sm text-pencil-gray flex items-center gap-space-xs mt-0.5">
+<span class="material-symbols-outlined text-[14px]">upload_file</span>
+<span>Turnitin Portal Submission</span>
+</span>
+</div>
+<button aria-label="Event options" class="w-8 h-8 rounded-full bg-surface-container-low flex items-center justify-center text-pencil-gray hover:text-on-surface self-center" type="button">
+<span class="material-symbols-outlined text-[18px]">more_vert</span>
+</button>
+</div>
+<!-- Event 3: Study Group -->
+<div class="flex items-start gap-space-md p-space-md bg-paper-white rounded-DEFAULT shadow-[0_3px_0_#e5e5e5] transition-all">
+<div class="flex flex-col items-center justify-center px-space-sm py-space-xs bg-storybook-green rounded-DEFAULT min-w-[68px]">
+<span class="font-label-caps text-label-caps text-on-primary-container font-extrabold">04:30</span>
+<span class="font-label-sm text-[10px] text-on-primary-container uppercase font-bold">PM</span>
+</div>
+<div class="flex flex-col flex-1 min-w-0">
+<div class="flex items-center gap-space-xs">
+<span class="px-1.5 py-0.5 rounded-full bg-storybook-green text-on-primary-container font-label-sm text-[10px]">Study Group</span>
+<span class="font-body-sm text-body-sm text-pencil-gray">• 4 Peers</span>
+</div>
+<h4 class="font-label-md text-label-md text-on-surface truncate mt-0.5">Java Concurrency Lab Review</h4>
+<span class="font-body-sm text-body-sm text-pencil-gray flex items-center gap-space-xs mt-0.5">
+<span class="material-symbols-outlined text-[14px]">group</span>
+<span>Library Pod B • Sync Call</span>
+</span>
+</div>
+<button aria-label="Event options" class="w-8 h-8 rounded-full bg-surface-container-low flex items-center justify-center text-pencil-gray hover:text-on-surface self-center" type="button">
+<span class="material-symbols-outlined text-[18px]">more_vert</span>
+</button>
+</div>
+</div>
+</section>
+<!-- My Subjects Quick Access Section -->
+<section class="flex flex-col gap-space-md">
+<div class="flex items-center justify-between">
+<div>
+<h2 class="font-headline-sm text-headline-sm text-on-surface">My Subjects</h2>
+<span class="font-body-sm text-body-sm text-pencil-gray">Quick Resource Desks</span>
+</div>
+<a class="font-label-md text-label-md text-secondary hover:underline flex items-center gap-space-xs" href="#">
+<span>Manage</span>
+<span class="material-symbols-outlined text-[16px]">tune</span>
+</a>
+</div>
+<!-- Horizontal scrolling chips row -->
+<div class="flex gap-space-sm overflow-x-auto pb-space-xs">
+<!-- Chip 1 -->
+<button class="flex-shrink-0 flex items-center gap-space-sm px-space-md py-space-sm bg-paper-white rounded-DEFAULT shadow-[0_3px_0_#afafaf] active:translate-y-1 active:shadow-[0_1px_0_#afafaf] transition-all" type="button">
+<div class="w-8 h-8 rounded-DEFAULT bg-storybook-green text-on-primary-container flex items-center justify-center">
+<span class="material-symbols-outlined text-[18px]">menu_book</span>
+</div>
+<div class="flex flex-col text-left">
+<span class="font-label-md text-label-md text-on-surface whitespace-nowrap">Requirements</span>
+<span class="font-body-sm text-body-sm text-pencil-gray text-[11px]">CS-302</span>
+</div>
+</button>
+<!-- Chip 2 -->
+<button class="flex-shrink-0 flex items-center gap-space-sm px-space-md py-space-sm bg-paper-white rounded-DEFAULT shadow-[0_3px_0_#afafaf] active:translate-y-1 active:shadow-[0_1px_0_#afafaf] transition-all" type="button">
+<div class="w-8 h-8 rounded-DEFAULT bg-secondary-fixed text-on-secondary-fixed flex items-center justify-center">
+<span class="material-symbols-outlined text-[18px]">analytics</span>
+</div>
+<div class="flex flex-col text-left">
+<span class="font-label-md text-label-md text-on-surface whitespace-nowrap">Qualitative / QQS</span>
+<span class="font-body-sm text-body-sm text-pencil-gray text-[11px]">STA-210</span>
+</div>
+</button>
+<!-- Chip 3 -->
+<button class="flex-shrink-0 flex items-center gap-space-sm px-space-md py-space-sm bg-paper-white rounded-DEFAULT shadow-[0_3px_0_#afafaf] active:translate-y-1 active:shadow-[0_1px_0_#afafaf] transition-all" type="button">
+<div class="w-8 h-8 rounded-DEFAULT bg-tertiary-fixed text-on-tertiary-fixed flex items-center justify-center">
+<span class="material-symbols-outlined text-[18px]">show_chart</span>
+</div>
+<div class="flex flex-col text-left">
+<span class="font-label-md text-label-md text-on-surface whitespace-nowrap">Microeconomics</span>
+<span class="font-body-sm text-body-sm text-pencil-gray text-[11px]">ECO-105</span>
+</div>
+</button>
+</div>
+</section>
+<!-- Daily Focus Card & Visual Placeholder -->
+<section class="flex flex-col gap-space-sm">
+<div class="relative overflow-hidden rounded-DEFAULT bg-paper-white shadow-[0_3px_0_#e5e5e5] p-space-md flex items-center gap-space-md">
+<img class="w-20 h-20 rounded-DEFAULT object-cover flex-shrink-0 shadow-sm" data-alt="A minimalist architectural student workspace bathed in soft daylight, featuring a neat wooden desk, open physical textbook, mechanical pencil, and clear coffee glass. Tactile modernism aesthetic with soft green accents and warm neutral tones." src="https://lh3.googleusercontent.com/aida-public/AB6AXuACnF5BbdycN8IEvl6UhHn26QVd7qxi3vHYBIV6u3pJYBf2DkYPlMhxHcIIWI8YpR_vvWEVBYojkEYbJKScKor-WnX1iaUJz3s1L3ClnCbTej87TfxxQGAgvFzSGRg7GZ-bnXRDKWqBpLZtYgVCu4khuJOZC8rEXM5sNUKevhqg89TxTD3MZ5YLXx3uFxO6rXBfnfT9agtmniMDB3eP-yGPffkh0azewUwdhAApzjF_uaNzAr9lvJAmNQ"/>
+<div class="flex flex-col flex-1 min-w-0">
+<span class="font-label-sm text-label-sm text-primary uppercase">Study Tip of the Day</span>
+<h4 class="font-label-md text-label-md text-on-surface mt-0.5">The Feynman Technique</h4>
+<p class="font-body-sm text-body-sm text-pencil-gray line-clamp-2 mt-0.5">Explain concurrency primitives in simple language without jargon to verify deep comprehension.</p>
+</div>
+</div>
+</section>
+</div></main></body></html>

@@ -1,0 +1,2 @@
+from pathlib import Path
+p=Path('app/src/main/java/com/studysync/app/ui/viewmodel/StudySyncViewModel.kt');s=p.read_text(encoding='utf-8').replace('"course_code" to pod?.string("course_code") ?: "Others"','"course_code" to (pod?.string("course_code") ?: "Others")').replace('title.isNotBlank() && PresentationMappers.wordCount(title)<=25','title.isNotBlank() && title.length<=2000 && PresentationMappers.wordCount(title)<=25');p.write_text(s,encoding='utf-8')
