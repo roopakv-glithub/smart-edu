@@ -123,6 +123,25 @@ class SupabaseRepository(private val store: SessionStore = MemorySessionStore(),
     suspend fun upload(path: String, bytes: ByteArray, mime: String) {
         authorized("storage/v1/object/study-notes/$path","POST",bytes=bytes,mime=mime)
     }
+    suspend fun delete(table: String, query: Map<String,String>) {
+        val url=HttpUrl.Builder().scheme("https").host("placeholder.invalid").addPathSegments("rest/v1/$table")
+        query.forEach { (k,v)->url.addQueryParameter(k,v) }
+        val path=url.build().toString().substringAfter("placeholder.invalid/")
+        authorized(path, "DELETE")
+    }
+    suspend fun deleteById(table: String, id: String) {
+        delete(table, mapOf("id" to "eq.$id"))
+    }
+    suspend fun loginWithPassword(identifier: String, password: String): String {
+        val email = if (identifier.contains("@")) identifier.trim() else "${identifier.trim()}@studysync.app"
+        val body = JsonObject().apply {
+            addProperty("email", email)
+            addProperty("password", password)
+        }
+        val response = raw("auth/v1/token?grant_type=password", "POST", gson.toJson(body), "").asJsonObject
+        session(response)
+        return userId
+    }
     suspend fun noteUrl(path: String): String {
         val response=authorized("storage/v1/object/sign/study-notes/$path","POST","{\"expiresIn\":300}").asJsonObject
         return SupabaseConfig.SUPABASE_URL.trimEnd('/')+"/storage/v1"+response.string("signedURL")

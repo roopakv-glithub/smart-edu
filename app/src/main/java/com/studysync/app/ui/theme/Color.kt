@@ -33,3 +33,7 @@ val BorderOutline = Color(0xFFBECBB1)
 val ErrorRed = Color(0xFFBA1A1A)
 val ErrorContainerRed = Color(0xFFFFDAD6)
 val OnErrorContainerRed = Color(0xFF93000A)
+
+val GoldAccent = Color(0xFFFFC800)
+val GoldYellow = Color(0xFFFFD900)
+

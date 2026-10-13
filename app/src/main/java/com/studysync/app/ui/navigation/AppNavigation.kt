@@ -6,7 +6,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.*
+import androidx.compose.material.icons.filled.School
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -17,52 +17,49 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.navigation.NavGraph.Companion.findStartDestination
-import androidx.navigation.compose.NavHost
-import androidx.navigation.compose.composable
-import androidx.navigation.compose.currentBackStackEntryAsState
-import androidx.navigation.compose.rememberNavController
+import androidx.navigation.compose.*
+import com.studysync.app.data.model.Role
 import com.studysync.app.ui.components.TopNavBar
 import com.studysync.app.ui.screens.*
 import com.studysync.app.ui.theme.*
 import com.studysync.app.ui.viewmodel.StudySyncViewModel
 import kotlinx.coroutines.launch
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AppNavigation(
     viewModel: StudySyncViewModel
 ) {
-    val cloudError by viewModel.cloudError.collectAsState()
-    cloudError?.let { message ->
-        AlertDialog(onDismissRequest = { viewModel.clearCloudError() }, title = { Text("StudySync") }, text = { Text(message) }, confirmButton = { TextButton(onClick = { viewModel.clearCloudError() }) { Text("OK") } })
-    }
+    val navController = rememberNavController()
     val isLoggedIn by viewModel.isLoggedIn.collectAsState()
     val userName by viewModel.userName.collectAsState()
-    key(isLoggedIn) {
-    val navController = rememberNavController()
-    fun navigateMain(route: String) {
-        navController.navigate(route) {
-            if(route == Screen.Home.route) {
-                popUpTo(Screen.Home.route) { inclusive = true }
-                restoreState = false
-            } else {
-                popUpTo(navController.graph.findStartDestination().id) { saveState = true }
-                restoreState = true
-            }
-            launchSingleTop = true
-        }
-    }
+    val userRole by viewModel.currentUserRole.collectAsState()
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val scope = rememberCoroutineScope()
 
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentRoute = navBackStackEntry?.destination?.route ?: Screen.Home.route
 
+    fun navigateMain(route: String) {
+        navController.navigate(route) {
+            popUpTo(Screen.Home.route) { saveState = true }
+            launchSingleTop = true
+            restoreState = true
+        }
+    }
+
     if (!isLoggedIn) {
         LoginScreen(
             viewModel = viewModel,
-            onLoginSuccess = {}
+            onLoginSuccess = {
+                navController.navigate(Screen.Home.route) {
+                    popUpTo(0)
+                }
+            },
+            onAdminLoginSuccess = {
+                navController.navigate(Screen.AdminDashboard.route) {
+                    popUpTo(0)
+                }
+            }
         )
     } else {
         ModalNavigationDrawer(
@@ -97,7 +94,13 @@ fun AppNavigation(
 
                     HorizontalDivider(modifier = Modifier.padding(vertical = 12.dp), color = SurfaceContainer)
 
-                    drawerScreens.forEach { screen ->
+                    val activeDrawerScreens = if (userRole == Role.ADMIN) {
+                        drawerScreens + listOf(Screen.AdminDashboard)
+                    } else {
+                        drawerScreens
+                    }
+
+                    activeDrawerScreens.forEach { screen ->
                         NavigationDrawerItem(
                             icon = { Icon(screen.icon, contentDescription = screen.title) },
                             label = { Text(screen.title, fontWeight = FontWeight.Bold) },
@@ -132,15 +135,28 @@ fun AppNavigation(
                             modifier = Modifier
                                 .size(36.dp)
                                 .clip(CircleShape)
-                                .background(SecondaryContainerBlue),
+                                .background(if (userRole == Role.ADMIN) TertiaryContainerPurple else SecondaryContainerBlue),
                             contentAlignment = Alignment.Center
                         ) {
-                            Text(userName.take(2), color = OnSecondaryContainerBlue, style = MaterialTheme.typography.labelLarge)
+                            Text(
+                                text = userName.take(2).ifBlank { "SS" },
+                                color = if (userRole == Role.ADMIN) Color(0xFF6B21A8) else OnSecondaryContainerBlue,
+                                style = MaterialTheme.typography.labelLarge
+                            )
                         }
                         Spacer(modifier = Modifier.width(10.dp))
                         Column {
-                            Text(userName, style = MaterialTheme.typography.labelLarge, color = OnSurfaceText)
-                            Text("Focus Plan", style = MaterialTheme.typography.bodySmall, color = PencilGray)
+                            Text(userName.ifBlank { "Student" }, style = MaterialTheme.typography.labelLarge, color = OnSurfaceText)
+                            Text(
+                                text = when (userRole) {
+                                    Role.ADMIN -> "Administrator"
+                                    Role.MODERATOR -> "Moderator"
+                                    Role.STUDENT -> "Student"
+                                },
+                                style = MaterialTheme.typography.bodySmall,
+                                color = if (userRole == Role.ADMIN) Color(0xFF6B21A8) else PencilGray,
+                                fontWeight = FontWeight.Bold
+                            )
                         }
                     }
                 }
@@ -149,12 +165,14 @@ fun AppNavigation(
             Scaffold(
                 topBar = {
                     TopNavBar(
-                        title = currentRoute.replaceFirstChar { it.uppercase() },
+                        title = when (currentRoute) {
+                            Screen.AdminDashboard.route -> "Admin Console"
+                            else -> currentRoute.replaceFirstChar { it.uppercase() }
+                        },
                         onOpenDrawer = { scope.launch { drawerState.open() } }
                     )
                 },
                 bottomBar = {
-                    // Floating Curved Bottom Navigation Bar Widget
                     Box(
                         modifier = Modifier
                             .fillMaxWidth()
@@ -179,9 +197,7 @@ fun AppNavigation(
                                     modifier = Modifier
                                         .clip(RoundedCornerShape(20.dp))
                                         .background(if (selected) StorybookGreen else Color.Transparent)
-                                        .clickable {
-                                            navigateMain(screen.route)
-                                        }
+                                        .clickable { navigateMain(screen.route) }
                                         .padding(horizontal = 10.dp, vertical = 6.dp)
                                 ) {
                                     Icon(
@@ -227,7 +243,13 @@ fun AppNavigation(
                     composable(Screen.Settings.route) {
                         SettingsScreen(
                             viewModel = viewModel,
-                            onSignOut = {}
+                            onSignOut = { viewModel.logout() }
+                        )
+                    }
+                    composable(Screen.AdminDashboard.route) {
+                        AdminDashboardScreen(
+                            viewModel = viewModel,
+                            onBack = { navController.popBackStack() }
                         )
                     }
                 }
@@ -235,5 +257,3 @@ fun AppNavigation(
         }
     }
 }
-}
-

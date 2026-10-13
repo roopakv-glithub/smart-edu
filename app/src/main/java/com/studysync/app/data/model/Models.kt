@@ -10,7 +10,9 @@ data class TaskItem(
     val category: String,
     val dueDate: String,
     val isCompleted: Boolean = false,
-    val dueAt: String = ""
+    val dueAt: String = "",
+    val isPersonal: Boolean = false,
+    val creatorId: String = ""
 )
 
 data class ScheduleEvent(
@@ -52,7 +54,9 @@ data class StudyNote(
     val fileCount: Int,
     val lastUpdated: String,
     val noteType: String,
-    val isCommon: Boolean = false
+    val isCommon: Boolean = false,
+    val uploaderId: String = "",
+    val summary: String = ""
 )
 
 data class QuizConfig(
@@ -99,4 +103,92 @@ data class StudyPod(
     val courseCode: String = "",
     val podIds: List<String> = listOf(id),
     val kind: String = "THEORY"
+)
+
+// --- User Roles & Admin ---
+enum class Role { ADMIN, MODERATOR, STUDENT }
+
+data class AppUser(
+    val id: String,
+    val name: String,
+    val registrationNumber: String,
+    val role: Role = Role.STUDENT
+)
+
+data class AppRestrictions(
+    val restrictTasks: Boolean = false,
+    val restrictNotes: Boolean = false
+)
+
+// --- Canonical Syllabus & Roadmap ---
+data class SyllabusSubtopic(
+    val id: String,
+    val title: String,
+    val description: String = "",
+    val isCompleted: Boolean = false
+)
+
+data class SyllabusTopic(
+    val id: String,
+    val title: String,
+    val subtopics: List<SyllabusSubtopic> = emptyList(),
+    val isCompleted: Boolean = false
+)
+
+data class SyllabusModule(
+    val id: String,
+    val moduleNumber: Int,
+    val title: String,
+    val topics: List<SyllabusTopic> = emptyList(),
+    val isCompleted: Boolean = false
+)
+
+data class SubjectSyllabus(
+    val id: String,
+    val courseCode: String,
+    val courseTitle: String,
+    val syllabusText: String,
+    val version: Int = 1,
+    val filePath: String? = null
+)
+
+data class SubjectRoadmap(
+    val id: String,
+    val courseCode: String,
+    val syllabusVersion: Int = 1,
+    val modules: List<SyllabusModule> = emptyList(),
+    val generatedAt: String = ""
+)
+
+// --- Quiz Attempt Persistence & Analytics ---
+data class QuizQuestionAttempt(
+    val question: String,
+    val options: List<String>,
+    val userSelected: Int,
+    val correctIndex: Int,
+    val explanation: String
+)
+
+data class QuizAttempt(
+    val id: String,
+    val userId: String,
+    val courseCode: String,
+    val moduleTitle: String = "",
+    val topicTitle: String = "",
+    val difficulty: String,
+    val totalQuestions: Int,
+    val correctAnswers: Int,
+    val score: Int,
+    val accuracyPercent: Int,
+    val timestamp: String,
+    val questionsData: List<QuizQuestionAttempt> = emptyList()
+)
+
+data class NoteSummary(
+    val id: String,
+    val noteId: String,
+    val courseCode: String,
+    val title: String,
+    val summaryText: String,
+    val keyConcepts: List<String> = emptyList()
 )

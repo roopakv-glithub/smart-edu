@@ -11,3 +11,6 @@ captures/
 .cxx
 local.properties
 *.hprof
+
+.artifacts/
+

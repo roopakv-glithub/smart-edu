@@ -1,21 +1,16 @@
 package com.studysync.app.ui.screens
 
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
-import androidx.compose.ui.text.style.TextOverflow
-import com.studysync.app.data.mapper.PresentationMappers
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.AssignmentTurnedIn
-import androidx.compose.material.icons.filled.Check
-import androidx.compose.material.icons.filled.Schedule
+import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -24,8 +19,11 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextDecoration
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.studysync.app.data.model.Role
+import com.studysync.app.data.model.StudyPod
 import com.studysync.app.data.model.TaskItem
 import com.studysync.app.data.model.TaskPriority
 import com.studysync.app.ui.components.TactileButton
@@ -40,8 +38,12 @@ fun TasksScreen(
 ) {
     val taskFilter by viewModel.taskFilter.collectAsState()
     val tasks by viewModel.tasks.collectAsState()
+    val userRole by viewModel.currentUserRole.collectAsState()
+    val restrictions by viewModel.appRestrictions.collectAsState()
 
     var showAddTaskDialog by remember { mutableStateOf(false) }
+    var taskToDelete by remember { mutableStateOf<TaskItem?>(null) }
+    var showDeleteDialog by remember { mutableStateOf(false) }
 
     val filteredTasks = when (taskFilter) {
         "ACTIVE" -> tasks.filter { !it.isCompleted }
@@ -52,6 +54,73 @@ fun TasksScreen(
     val doneCount = tasks.count { it.isCompleted }
     val progressFraction = if (tasks.isNotEmpty()) doneCount.toFloat() / tasks.size else 0f
 
+    // Requirement 4: Delete Confirmation Dialog (For Me vs For Everyone)
+    if (showDeleteDialog && taskToDelete != null) {
+        val task = taskToDelete!!
+        val isPrivileged = userRole == Role.ADMIN || userRole == Role.MODERATOR
+
+        AlertDialog(
+            onDismissRequest = {
+                showDeleteDialog = false
+                taskToDelete = null
+            },
+            title = { Text("Delete Task Options", fontWeight = FontWeight.Bold) },
+            text = {
+                Text(
+                    text = if (task.isPersonal)
+                        "Delete this personal task?"
+                    else
+                        "This is a shared task. You can hide it for yourself or permanently delete it for the entire class."
+                )
+            },
+            confirmButton = {
+                Column(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalArrangement = Arrangement.spacedBy(6.dp)
+                ) {
+                    if (!task.isPersonal) {
+                        Button(
+                            onClick = {
+                                viewModel.hideTaskForMe(task.id)
+                                showDeleteDialog = false
+                                taskToDelete = null
+                            },
+                            modifier = Modifier.fillMaxWidth(),
+                            colors = ButtonDefaults.buttonColors(containerColor = SecondaryBlue)
+                        ) {
+                            Text("1. For me (Hide from my view)")
+                        }
+                    }
+
+                    if (task.isPersonal || isPrivileged) {
+                        Button(
+                            onClick = {
+                                viewModel.deleteTaskGlobally(task.id)
+                                showDeleteDialog = false
+                                taskToDelete = null
+                            },
+                            modifier = Modifier.fillMaxWidth(),
+                            colors = ButtonDefaults.buttonColors(containerColor = ErrorRed)
+                        ) {
+                            Text(if (task.isPersonal) "Delete permanently" else "2. For everyone (Global delete)")
+                        }
+                    }
+
+                    OutlinedButton(
+                        onClick = {
+                            showDeleteDialog = false
+                            taskToDelete = null
+                        },
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        Text("3. Cancel")
+                    }
+                }
+            },
+            dismissButton = {}
+        )
+    }
+
     Box(modifier = Modifier.fillMaxSize()) {
         LazyColumn(
             modifier = Modifier
@@ -60,37 +129,41 @@ fun TasksScreen(
                 .padding(16.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
-            // Header & Action Bar
+            // Header
             item {
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Column {
-                        Text(
-                            text = "Tasks",
-                            style = MaterialTheme.typography.headlineLarge,
-                            color = OnSurfaceText,
-                            fontWeight = FontWeight.ExtraBold
-                        )
-                        Text(
-                            text = "Fall Semester Roadmap",
-                            style = MaterialTheme.typography.bodySmall,
-                            color = PencilGray
-                        )
-                    }
-
-                    TactileButton(
-                        text = "+ Add Task",
-                        onClick = { showAddTaskDialog = true },
-                        backgroundColor = EagerGreen,
-                        bottomShadowColor = DarkGreenContainer
+                Column {
+                    Text(
+                        text = "ACADEMIC TASKS",
+                        style = MaterialTheme.typography.labelLarge,
+                        color = PrimaryGreen,
+                        fontSize = 12.sp
                     )
+                    Text(
+                        text = "Task Center",
+                        style = MaterialTheme.typography.headlineLarge,
+                        color = OnSurfaceText,
+                        fontWeight = FontWeight.ExtraBold
+                    )
+                    if (restrictions.restrictTasks && userRole == Role.STUDENT) {
+                        Spacer(modifier = Modifier.height(4.dp))
+                        Box(
+                            modifier = Modifier
+                                .clip(RoundedCornerShape(8.dp))
+                                .background(Color(0xFFFFF4E5))
+                                .padding(horizontal = 8.dp, vertical = 4.dp)
+                        ) {
+                            Text(
+                                text = "🔒 Shared task creation is restricted by admins. Personal tasks available.",
+                                color = Color(0xFFB76E00),
+                                style = MaterialTheme.typography.bodySmall,
+                                fontSize = 11.sp
+                            )
+                        }
+                    }
                 }
             }
 
-            // Filter Chips
+            // Filter Tabs
             item {
                 Row(
                     modifier = Modifier.fillMaxWidth(),
@@ -109,7 +182,7 @@ fun TasksScreen(
                         modifier = Modifier.weight(1f)
                     )
                     TactileChip(
-                        text = "Done (${doneCount})",
+                        text = "Done ($doneCount)",
                         selected = taskFilter == "DONE",
                         onClick = { viewModel.setTaskFilter("DONE") },
                         modifier = Modifier.weight(1f)
@@ -175,9 +248,25 @@ fun TasksScreen(
             items(filteredTasks, key = { it.id }) { task ->
                 TaskCard(
                     task = task,
-                    onToggleComplete = { viewModel.toggleTaskCompleted(task.id) }
+                    onToggleComplete = { viewModel.toggleTaskCompleted(task.id) },
+                    onDeleteClick = {
+                        taskToDelete = task
+                        showDeleteDialog = true
+                    }
                 )
             }
+        }
+
+        // Floating Action Button
+        FloatingActionButton(
+            onClick = { showAddTaskDialog = true },
+            modifier = Modifier
+                .align(Alignment.BottomEnd)
+                .padding(24.dp),
+            containerColor = PrimaryGreen,
+            contentColor = PaperWhite
+        ) {
+            Icon(Icons.Default.Add, contentDescription = "Add Task")
         }
     }
 
@@ -186,6 +275,7 @@ fun TasksScreen(
         AddTaskDialog(
             onDismiss = { showAddTaskDialog = false },
             pods = viewModel.studyPods.collectAsState().value,
+            restrictTasks = restrictions.restrictTasks && userRole == Role.STUDENT,
             onAddTask = { title, desc, cat, priority, dueDate, dueTime, personal ->
                 viewModel.addTask(title, desc, cat, priority, dueDate, dueTime, personal)
                 showAddTaskDialog = false
@@ -197,7 +287,8 @@ fun TasksScreen(
 @Composable
 fun TaskCard(
     task: TaskItem,
-    onToggleComplete: () -> Unit
+    onToggleComplete: () -> Unit,
+    onDeleteClick: () -> Unit
 ) {
     val (priorityBg, priorityFg, priorityText) = when (task.priority) {
         TaskPriority.HIGH -> Triple(ErrorContainerRed, OnErrorContainerRed, "High")
@@ -213,21 +304,20 @@ fun TaskCard(
             modifier = Modifier.fillMaxWidth(),
             verticalAlignment = Alignment.Top
         ) {
-            // Checkbox Circle
             Box(
                 modifier = Modifier
-                    .size(28.dp)
+                    .size(24.dp)
                     .clip(CircleShape)
-                    .background(if (task.isCompleted) EagerGreen else SurfaceContainerHighest)
-                    .clickable { onToggleComplete() },
+                    .background(if (task.isCompleted) EagerGreen else SurfaceContainer)
+                    .clickable(onClick = onToggleComplete),
                 contentAlignment = Alignment.Center
             ) {
                 if (task.isCompleted) {
                     Icon(
                         imageVector = Icons.Default.Check,
-                        contentDescription = "Completed",
+                        contentDescription = null,
                         tint = PaperWhite,
-                        modifier = Modifier.size(18.dp)
+                        modifier = Modifier.size(16.dp)
                     )
                 }
             }
@@ -235,79 +325,82 @@ fun TaskCard(
             Spacer(modifier = Modifier.width(12.dp))
 
             Column(modifier = Modifier.weight(1f)) {
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
+                Text(
+                    text = task.title,
+                    style = MaterialTheme.typography.titleMedium,
+                    color = if (task.isCompleted) PencilGray else OnSurfaceText,
+                    fontWeight = FontWeight.Bold,
+                    textDecoration = if (task.isCompleted) TextDecoration.LineThrough else null
+                )
+
+                if (task.description.isNotBlank()) {
+                    Spacer(modifier = Modifier.height(2.dp))
+                    Text(
+                        text = task.description,
+                        style = MaterialTheme.typography.bodySmall,
+                        color = PencilGray,
+                        maxLines = 2,
+                        overflow = TextOverflow.Ellipsis
+                    )
+                }
+
+                Spacer(modifier = Modifier.height(8.dp))
+
+                Row(verticalAlignment = Alignment.CenterVertically) {
                     Box(
                         modifier = Modifier
-                            .clip(RoundedCornerShape(6.dp))
+                            .clip(CircleShape)
                             .background(priorityBg)
                             .padding(horizontal = 8.dp, vertical = 2.dp)
                     ) {
                         Text(
                             text = priorityText,
                             color = priorityFg,
-                            style = MaterialTheme.typography.bodySmall,
-                            fontSize = 10.sp,
-                            fontWeight = FontWeight.Bold
+                            style = MaterialTheme.typography.labelLarge,
+                            fontSize = 10.sp
                         )
                     }
 
-                    Row(modifier = Modifier.fillMaxWidth(0.45f), horizontalArrangement = Arrangement.End, verticalAlignment = Alignment.CenterVertically) {
+                    Spacer(modifier = Modifier.width(8.dp))
+
+                    Text(
+                        text = task.category,
+                        style = MaterialTheme.typography.bodySmall,
+                        color = PencilGray,
+                        fontSize = 11.sp
+                    )
+
+                    Spacer(modifier = Modifier.width(8.dp))
+
+                    Row(verticalAlignment = Alignment.CenterVertically) {
                         Icon(
                             imageVector = Icons.Default.Schedule,
                             contentDescription = null,
                             tint = PencilGray,
-                            modifier = Modifier.size(14.dp)
+                            modifier = Modifier.size(12.dp)
                         )
                         Spacer(modifier = Modifier.width(4.dp))
                         Text(
                             text = task.dueDate,
-                            maxLines = 2,
-                            overflow = TextOverflow.Ellipsis,
                             style = MaterialTheme.typography.bodySmall,
                             color = PencilGray,
                             fontSize = 11.sp
                         )
                     }
                 }
+            }
 
-                Spacer(modifier = Modifier.height(6.dp))
-
-                Text(
-                    text = task.title,
-                    style = MaterialTheme.typography.headlineSmall,
-                    color = if (task.isCompleted) PencilGray else OnSurfaceText,
-                    fontSize = 16.sp,
-                    textDecoration = if (task.isCompleted) TextDecoration.LineThrough else TextDecoration.None
+            // Delete / Hide Button
+            IconButton(
+                onClick = onDeleteClick,
+                modifier = Modifier.size(28.dp)
+            ) {
+                Icon(
+                    imageVector = Icons.Default.DeleteOutline,
+                    contentDescription = "Delete or Hide",
+                    tint = PencilGray,
+                    modifier = Modifier.size(18.dp)
                 )
-
-                Spacer(modifier = Modifier.height(4.dp))
-
-                Text(
-                    text = task.description,
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = PencilGray,
-                    fontSize = 13.sp
-                )
-
-                Spacer(modifier = Modifier.height(8.dp))
-
-                Box(
-                    modifier = Modifier
-                        .clip(RoundedCornerShape(6.dp))
-                        .background(SurfaceContainer)
-                        .padding(horizontal = 8.dp, vertical = 2.dp)
-                ) {
-                    Text(
-                        text = task.category,
-                        color = OnSurfaceText,
-                        style = MaterialTheme.typography.bodySmall,
-                        fontSize = 11.sp
-                    )
-                }
             }
         }
     }
@@ -316,44 +409,129 @@ fun TaskCard(
 @Composable
 fun AddTaskDialog(
     onDismiss: () -> Unit,
-    pods: List<com.studysync.app.data.model.StudyPod>,
-    onAddTask: (String, String, String, TaskPriority, String, String, Boolean) -> Unit
+    pods: List<StudyPod>,
+    restrictTasks: Boolean,
+    onAddTask: (title: String, desc: String, category: String, priority: TaskPriority, dueDate: String, dueTime: String, isPersonal: Boolean) -> Unit
 ) {
     var title by remember { mutableStateOf("") }
     var description by remember { mutableStateOf("") }
-    var category by remember { mutableStateOf("") }
-    var personal by remember { mutableStateOf(false) }
-    var expanded by remember { mutableStateOf(false) }
-    var dueDate by remember { mutableStateOf(java.text.SimpleDateFormat("dd/MM/yy",java.util.Locale.ENGLISH).format(java.util.Date())) }
+    var selectedPodId by remember { mutableStateOf(if (pods.isNotEmpty() && !restrictTasks) pods.first().id else "OTHERS") }
+    var selectedPriority by remember { mutableStateOf(TaskPriority.MEDIUM) }
+    var dueDate by remember { mutableStateOf("15/10/26") }
     var dueTime by remember { mutableStateOf("05:00 PM") }
-    var priority by remember { mutableStateOf(TaskPriority.STANDARD) }
-    val wordCount=PresentationMappers.wordCount(title)
-    val choice=pods.firstOrNull { it.id==category }
-    AlertDialog(onDismissRequest=onDismiss,title={Text("Add New Task")},text={
-        Column(Modifier.fillMaxWidth().heightIn(max=480.dp).verticalScroll(rememberScrollState()),verticalArrangement=Arrangement.spacedBy(12.dp)) {
-            OutlinedTextField(value=title,onValueChange={if(PresentationMappers.wordCount(it)<=25 && it.length<=2000)title=it},label={Text("Task title")},supportingText={Text("$wordCount / 25 words")},maxLines=3,modifier=Modifier.fillMaxWidth())
-            OutlinedTextField(value=description,onValueChange={description=it},label={Text("Description")},minLines=2,maxLines=4,modifier=Modifier.fillMaxWidth())
-            Row(verticalAlignment=Alignment.CenterVertically) {
-                Checkbox(checked=personal || category=="OTHERS",enabled=category!="OTHERS",onCheckedChange={personal=it})
-                Text("Personal task")
-            }
-            Box(Modifier.fillMaxWidth()) {
-                OutlinedButton(onClick={expanded=true},modifier=Modifier.fillMaxWidth()) {Text(if(category=="OTHERS") "Others" else choice?.name ?: "Choose subject")}
-                DropdownMenu(expanded=expanded,onDismissRequest={expanded=false}) {
-                    pods.forEach {pod->DropdownMenuItem(text={Column{Text(pod.name);if(pod.teacher.isNotBlank())Text(pod.teacher,style=MaterialTheme.typography.bodySmall)}},onClick={category=pod.id;expanded=false})}
-                    DropdownMenuItem(text={Text("Others")},onClick={category="OTHERS";expanded=false})
+    var isPersonal by remember { mutableStateOf(restrictTasks) }
+
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = {
+            Text(
+                text = "Create Task",
+                style = MaterialTheme.typography.titleLarge,
+                fontWeight = FontWeight.Bold
+            )
+        },
+        text = {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .verticalScroll(rememberScrollState()),
+                verticalArrangement = Arrangement.spacedBy(10.dp)
+            ) {
+                OutlinedTextField(
+                    value = title,
+                    onValueChange = { title = it },
+                    label = { Text("Title") },
+                    placeholder = { Text("e.g. Read Operating Systems Chapter 3") },
+                    modifier = Modifier.fillMaxWidth()
+                )
+
+                OutlinedTextField(
+                    value = description,
+                    onValueChange = { description = it },
+                    label = { Text("Description (Optional)") },
+                    modifier = Modifier.fillMaxWidth()
+                )
+
+                Text(
+                    text = "TARGET SUBJECT",
+                    style = MaterialTheme.typography.labelLarge,
+                    color = PencilGray,
+                    fontSize = 11.sp
+                )
+
+                Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(4.dp)) {
+                    val available = if (restrictTasks) listOf("OTHERS") else pods.map { it.id } + listOf("OTHERS")
+                    available.take(3).forEach { podId ->
+                        val label = pods.firstOrNull { it.id == podId }?.courseCode ?: "Personal"
+                        val sel = selectedPodId == podId
+                        TactileChip(
+                            text = label,
+                            selected = sel,
+                            onClick = {
+                                selectedPodId = podId
+                                if (podId == "OTHERS") isPersonal = true
+                            }
+                        )
+                    }
+                }
+
+                Text(
+                    text = "PRIORITY",
+                    style = MaterialTheme.typography.labelLarge,
+                    color = PencilGray,
+                    fontSize = 11.sp
+                )
+
+                Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(6.dp)) {
+                    TaskPriority.entries.forEach { p ->
+                        val sel = selectedPriority == p
+                        TactileChip(
+                            text = p.name,
+                            selected = sel,
+                            onClick = { selectedPriority = p }
+                        )
+                    }
+                }
+
+                Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                    OutlinedTextField(
+                        value = dueDate,
+                        onValueChange = { dueDate = it },
+                        label = { Text("Due Date (DD/MM/YY)") },
+                        modifier = Modifier.weight(1f)
+                    )
+                    OutlinedTextField(
+                        value = dueTime,
+                        onValueChange = { dueTime = it },
+                        label = { Text("Time (HH:MM AM/PM)") },
+                        modifier = Modifier.weight(1f)
+                    )
                 }
             }
-            if(choice!=null) Text(PresentationMappers.subjectCode(choice.courseCode),style=MaterialTheme.typography.bodySmall)
-            if(category=="OTHERS") Text("Others tasks are visible only to you.",style=MaterialTheme.typography.bodySmall)
-            Row(horizontalArrangement=Arrangement.spacedBy(8.dp)) {
-                OutlinedTextField(value=dueDate,onValueChange={dueDate=it},label={Text("Date (dd/mm/yy)")},singleLine=true,modifier=Modifier.weight(0.62f))
-                OutlinedTextField(value=dueTime,onValueChange={dueTime=it},label={Text("Time")},supportingText={Text("hh:mm AM/PM")},singleLine=true,modifier=Modifier.weight(0.38f))
-            }
-            Text("Priority",style=MaterialTheme.typography.labelLarge)
-            Row(horizontalArrangement=Arrangement.spacedBy(6.dp)) {
-                TaskPriority.entries.forEach {p->FilterChip(selected=priority==p,onClick={priority=p},label={Text(p.name.lowercase().replaceFirstChar{it.uppercase()})})}
+        },
+        confirmButton = {
+            TactileButton(
+                text = "Save Task",
+                enabled = title.isNotBlank(),
+                onClick = {
+                    onAddTask(
+                        title.trim(),
+                        description.trim(),
+                        selectedPodId,
+                        selectedPriority,
+                        dueDate.trim(),
+                        dueTime.trim(),
+                        isPersonal || restrictTasks
+                    )
+                },
+                backgroundColor = PrimaryGreen,
+                bottomShadowColor = DarkGreenContainer
+            )
+        },
+        dismissButton = {
+            TextButton(onClick = onDismiss) {
+                Text("Cancel")
             }
         }
-    },confirmButton={TextButton(enabled=title.isNotBlank() && wordCount<=25 && category.isNotBlank() && dueDate.isNotBlank() && dueTime.isNotBlank(),onClick={onAddTask(title.trim(),description,category,priority,dueDate,dueTime,personal || category=="OTHERS")}) {Text("Save task")}},dismissButton={TextButton(onClick=onDismiss){Text("Cancel")}})
+    )
 }

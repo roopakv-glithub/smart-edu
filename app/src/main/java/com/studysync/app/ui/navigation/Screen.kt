@@ -14,6 +14,7 @@ sealed class Screen(val route: String, val title: String, val icon: ImageVector)
     object Chat : Screen("chat", "Chat", Icons.Default.Forum)
     object Jarvis : Screen("jarvis", "Jarvis AI", Icons.Default.Psychology)
     object Settings : Screen("settings", "Settings", Icons.Default.Settings)
+    object AdminDashboard : Screen("admin_dashboard", "Admin Console", Icons.Default.AdminPanelSettings)
 }
 
 val bottomNavScreens = listOf(
