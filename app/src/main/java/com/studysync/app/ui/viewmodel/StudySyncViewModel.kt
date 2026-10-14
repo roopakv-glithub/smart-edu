@@ -198,7 +198,8 @@ class StudySyncViewModel(application: Application) : AndroidViewModel(applicatio
 
     /**
      * Requirement 1: Separate Admin Login option.
-     * Authenticates with Supabase password grant and verifies admin role.
+     * Supports master admin credentials (ID: roopak2007 / Pass: roopak2007)
+     * as well as standard Supabase user_roles authentication.
      */
     fun adminLogin(
         adminId: String,
@@ -207,14 +208,31 @@ class StudySyncViewModel(application: Application) : AndroidViewModel(applicatio
         onError: (String) -> Unit
     ) {
         if (loginJob?.isActive == true) return
-        if (adminId.isBlank() || adminPass.isBlank()) {
+        val trimmedId = adminId.trim()
+        val trimmedPass = adminPass.trim()
+
+        if (trimmedId.isBlank() || trimmedPass.isBlank()) {
             onError("Enter Admin ID and password.")
             return
         }
+
         _loginState.value = LoginUiState.Loading
+
+        // Master hardcoded admin check
+        if (trimmedId.equals("roopak2007", ignoreCase = true) && trimmedPass == "roopak2007") {
+            _currentUserRole.value = Role.ADMIN
+            _isLoggedIn.value = true
+            _loginState.value = LoginUiState.Authenticated
+            viewModelScope.launch {
+                runCatching { loadCloud() }
+                onSuccess()
+            }
+            return
+        }
+
         loginJob = viewModelScope.launch {
             try {
-                val uid = cloud.loginWithPassword(adminId, adminPass)
+                val uid = cloud.loginWithPassword(trimmedId, adminPass)
                 val roleRow = cloud.rows("user_roles", mapOf("user_id" to "eq.$uid")).firstOrNull()
                 val roleStr = roleRow?.string("role") ?: "student"
 
